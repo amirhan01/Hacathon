@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from account.serializers import RegisterSerializer, ChangePasswordSerializer
+from account.serializers import RegisterSerializer, ChangePasswordSerializer, ForgotPasswordSerializer, ForgotPasswordCompleteSerializer
 from rest_framework.permissions import IsAuthenticated
+
 
 
 User = get_user_model()
@@ -42,6 +43,24 @@ class ChangePasswordView(APIView):
         serializers.save()
         return Response('Пароль успешно обнавлен!')
 
+
+'''Функция для востановления пароля по почте'''
+class ForgotPasswordView(APIView):
+    def post(self, request):
+        data = request.data
+        serializer = ForgotPasswordSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.send_code()
+        return Response('Вам отправлено письмо для восстановления пароля')
+
+
+class ForgotPasswordComplete(APIView):
+    def post(self, request):
+        data = request.data
+        serializer = ForgotPasswordCompleteSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.set_new_pass()
+        return Response('Паротль был успешно изменен!')
 
 
 

@@ -62,4 +62,13 @@ class MyUser(AbstractUser):
         code = str(uuid.uuid4())
         self.activation_code = code
 
+    # Метод создания кода для ForgotPassword
+    def code_generation(self):
+        import random
+        from string import ascii_letters, digits
+        symb = ascii_letters + digits
+        secure_random = random.SystemRandom()
+        code = ''.join(secure_random.choice(symb) for i in range(8))
+        self.activation_code = code
+
 
