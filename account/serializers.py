@@ -6,7 +6,6 @@ from django.contrib.auth.password_validation import validate_password
 User = get_user_model()
 
 
-'''Сериалазер для регистрации'''
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(min_length=8, write_only=True, required=True)
 
@@ -19,7 +18,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         password2 = attrs.pop('password2')
 
         if password != password2:
-            raise serializers.ValidationError('Пароль не совподает!')
+            raise serializers.ValidationError('Пароль не совпадает!')
         return attrs
 
     def create(self, validated_data):
@@ -29,8 +28,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return User
 
 
-
-'''Сериалайзер для изменения пароля'''
 class ChangePasswordSerializer(serializers.ModelSerializer):
     old_password = serializers.CharField(write_only=True, required=True)
     new_password = serializers.CharField(write_only=True, required=True)
@@ -59,8 +56,6 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         return user
 
 
-
-'''Сериалайзер для Востановления пароля через почту'''
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
 
@@ -77,7 +72,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
         send_mail(
             'Восстановление пароля',
             f'Ваш код подтверждения: {user.activation_code}',
-            'lgtahir93@gmail.com',
+            'shamuza0102@gmail.com',
             [email]
         )
 
@@ -99,9 +94,9 @@ class ForgotPasswordCompleteSerializer(serializers.Serializer):
         return code
 
     def validate(self, attrs):
-        pass1 = attrs.get('password')
-        pass2 = attrs.get('password2')
-        if pass1 != pass2:
+        password1 = attrs.get('password')
+        password2 = attrs.get('password2')
+        if password1 != password2:
             raise serializers.ValidationError('Пароли не совпадают!')
         return attrs
 

@@ -5,21 +5,19 @@ from account.serializers import RegisterSerializer, ChangePasswordSerializer, Fo
 from rest_framework.permissions import IsAuthenticated
 
 
-
 User = get_user_model()
 
-'''Функция регистрации'''
+
 class RegisterApiView(APIView):
     def post(self, request):
         data = request.data
         serializers = RegisterSerializer(data=data)
         if serializers.is_valid(raise_exception=True):
             serializers.save()
-            massage = f'Успешная регистрация!. Письмо отправленно Вам на почту.'
+            massage = f'Регистрация прошла успешно. Письмо отправленно Вам на почту.'
             return Response(massage, status=201)
 
 
-'''Функция для активации аккаунта'''
 class ActivationView(APIView):
     def get(self, request, activation_code):
         try:
@@ -32,19 +30,16 @@ class ActivationView(APIView):
             return Response({'msg': 'Неверный код!'}, status=400)
 
 
-'''Фукция для смены пароля'''
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializers = ChangePasswordSerializer(data=request.data,
-                                               context={'request': request})
+        serializers = ChangePasswordSerializer(data=request.data, context={'request': request})
         serializers.is_valid(raise_exception=True)
         serializers.save()
-        return Response('Пароль успешно обнавлен!')
+        return Response('Пароль успешно обновлен!')
 
 
-'''Функция для востановления пароля по почте'''
 class ForgotPasswordView(APIView):
     def post(self, request):
         data = request.data
@@ -60,7 +55,7 @@ class ForgotPasswordComplete(APIView):
         serializer = ForgotPasswordCompleteSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.set_new_pass()
-        return Response('Паротль был успешно изменен!')
+        return Response('Пароль был успешно изменен!')
 
 
 

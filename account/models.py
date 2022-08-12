@@ -3,12 +3,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-# Кастомный пользователь
 class UserManager(BaseUserManager):
 
-    # Защищенный метод для создания пользователя
     def _create_user(self, email, password, **extra_fields):
-
         if not email:
             raise ValueError("The given email must be set")
 
@@ -19,13 +16,11 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    # Метод для создания пользователя
     def create_user(self, email, password, **extra_fields):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
         return self._create_user(email, password, **extra_fields)
 
-    # Метод для создания админа
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
@@ -39,7 +34,6 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
-# Параметры для пользователя
 class MyUser(AbstractUser):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=50, blank=True, null=True)
@@ -56,13 +50,11 @@ class MyUser(AbstractUser):
     def __str__(self):
         return self.email
 
-    # Метод для создания активационного кода
     def create_activation_code(self):
         import uuid
         code = str(uuid.uuid4())
         self.activation_code = code
 
-    # Метод создания кода для ForgotPassword
     def code_generation(self):
         import random
         from string import ascii_letters, digits
