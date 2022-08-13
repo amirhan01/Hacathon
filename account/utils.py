@@ -5,7 +5,7 @@ User = get_user_model()
 
 
 def send_confirmation_mail(code, email):
-    full_link = f'http://localhost:8000/api/account/active/\nкод для активации: {code}'
+    full_link = f'http://localhost:8000/api/account/active/{code}'
     send_mail(
         'Код для активации аккаунта',
         full_link,
