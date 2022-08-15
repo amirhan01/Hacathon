@@ -64,10 +64,16 @@ class Like(models.Model):
 
 
 class Favorite(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorits')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='favorits')
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorite')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='favorite')
     favorite = models.BooleanField('Избранное', default=False)
 
     def __str__(self):
-        return f'{self.owner} {self.product}'
+        return f'{self.product} {self.favorite}'
 
+
+class Contact(models.Model):
+    email = models.EmailField(unique=True)
+
+    def __str__(self):
+        return self.email

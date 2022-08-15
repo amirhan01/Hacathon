@@ -1,6 +1,6 @@
 from rest_framework import serializers
-
-from product.models import Category, Product, Comment, Image
+from product.tasks import send_product_info
+from product.models import Category, Product, Comment, Image, Contact
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -42,7 +42,7 @@ class ProductSerializer(serializers.ModelSerializer):
         requests = self.context.get('request')
         images = requests.FILES
         product = Product.objects.create(**validated_data)
-
+        send_product_info.delay(validated_data['name'])
         for image in images.getlist('images'):
             Image.objects.create(product=product, image=image)
 
@@ -59,3 +59,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class RatingSerializer(serializers.Serializer):
     rating = serializers.IntegerField(required=True, min_value=1, max_value=10)
+
+
+class ContactSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Contact
+        fields = '__all__'

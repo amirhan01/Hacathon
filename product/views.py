@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import mixins
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-from product.models import Category, Product, Comment, Rating, Like, Favorite
-from product.serializers import CategorySerializer, ProductSerializer, CommentSerializer, RatingSerializer
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from product.models import Category, Product, Comment, Rating, Like, Favorite, Contact
+from product.serializers import CategorySerializer, ProductSerializer, CommentSerializer, RatingSerializer, \
+    ContactSerializer
 
 
 class CategoryView(ModelViewSet):
@@ -18,7 +20,7 @@ class CategoryView(ModelViewSet):
 class ProductView(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_fields = ['category']
     ordering_fields = ['name']
@@ -53,10 +55,10 @@ class ProductView(ModelViewSet):
     def favorite(self, request, pk):
         try:
             fav_object, _ = Favorite.objects.get_or_create(owner=request.user, product_id=pk)
-            fav_object.fav = not fav_object.fav
+            fav_object.favorite = not fav_object.favorite
             fav_object.save()
 
-            if fav_object.fav:
+            if fav_object.favorite:
                 return Response('Вы добавили в избранное :)')
             return Response('Вы удалили из избранного :(')
         except:
@@ -71,3 +73,8 @@ class CommentView(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+
+class ContactView(mixins.CreateModelMixin, mixins.DestroyModelMixin, GenericViewSet):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+    permission_classes = [IsAuthenticated]

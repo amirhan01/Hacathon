@@ -24,7 +24,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         code = user.activation_code
-        send_confirmation_mail(code, user.email)
+        send_confirmation_mail.delay(code, user.email)
+
         return User
 
 
@@ -39,7 +40,7 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs['new_password'] != attrs['new_password2']:
-            raise serializers.ValidationError('Указаные пароли не совпадают')
+            raise serializers.ValidationError('Указанные пароли не совпадают')
         return attrs
 
     def validate_old_password(self, p):
